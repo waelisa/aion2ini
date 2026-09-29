@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AION 2 Lag Reduction INI Generator - StepTube</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0b0f14; color:#dce3ea; font-family:'Segoe UI','Malgun Gothic',sans-serif; min-height:100vh; padding:24px 16px; }
+  .wrap { max-width:760px; margin:0 auto; }
+  h1 { font-size:1.5rem; color:#5eead4; margin-bottom:4px; }
+  .sub { color:#8b98a5; font-size:.9rem; margin-bottom:24px; }
+  .card { background:#121a23; border:1px solid #1f2b38; border-radius:12px; padding:20px; margin-bottom:16px; }
+  .card h2 { font-size:1.05rem; color:#93c5fd; margin-bottom:12px; }
+  select { width:100%; padding:12px; font-size:1rem; background:#0b1219; color:#dce3ea; border:1px solid #2b3b4d; border-radius:8px; cursor:pointer; }
+  .tierbadge { display:none; margin-top:12px; padding:10px 14px; border-radius:8px; background:#0e2a24; border:1px solid #14532d; color:#6ee7b7; font-size:.95rem; }
+  textarea { width:100%; height:260px; margin-top:12px; background:#0b1219; color:#a7f3d0; border:1px solid #2b3b4d; border-radius:8px; padding:12px; font-family:Consolas,monospace; font-size:.8rem; resize:vertical; white-space:pre; }
+  .btn { display:block; width:100%; margin-top:12px; padding:14px; font-size:1.05rem; font-weight:700; color:#06251f; background:linear-gradient(90deg,#5eead4,#a7f3d0); border:none; border-radius:8px; cursor:pointer; }
+  .btn:active { transform:scale(.99); }
+  ol { padding-left:20px; line-height:1.9; font-size:.95rem; }
+  ol code { background:#0b1219; padding:2px 6px; border-radius:4px; color:#fbbf24; font-size:.85rem; }
+  .note { font-size:.85rem; color:#8b98a5; line-height:1.7; }
+  .note b { color:#fca5a5; }
+  .hidden { display:none; }
+  /* Direct VRAM selection panel */
+  .vram-guide { font-size:.9rem; color:#8b98a5; line-height:1.8; margin-bottom:12px; }
+  .vram-guide code { background:#0b1219; padding:2px 6px; border-radius:4px; color:#fbbf24; font-size:.85rem; }
+  .vram-btns { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
+  .vram-btn { padding:12px 8px; font-size:.95rem; font-weight:700; color:#dce3ea; background:#0b1219; border:1px solid #2b3b4d; border-radius:8px; cursor:pointer; }
+  .vram-btn:hover { border-color:#5eead4; color:#5eead4; }
+  .vram-btn small { display:block; font-weight:400; font-size:.75rem; color:#8b98a5; margin-top:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AION 2 Lag Reduction INI Generator</h1>
+  <div class="sub">No visual quality change · In-game options stay unlocked · Delete it to fully revert — by StepTube</div>
+
+  <div class="card">
+    <h2>1. Select your graphics card</h2>
+    <select id="gpu" onchange="pick()">
+      <option value="">— Choose my graphics card —</option>
+      <optgroup label="VRAM 24GB and above">
+        <option value="1">RTX 5090 / 4090 / 3090 Ti / 3090</option>
+        <option value="1">RX 7900 XTX / Titan RTX / Laptop RTX 5090</option>
+      </optgroup>
+      <optgroup label="VRAM 16GB (16–20GB)">
+        <option value="2">RTX 5080 / 5070 Ti / 4080 (SUPER) / 4070 Ti SUPER</option>
+        <option value="2">RTX 5060 Ti 16GB / 4060 Ti 16GB / Laptop RTX 5090 · 5080 · 4090</option>
+        <option value="2">RX 7900 XT (20GB) / 7800 XT / 6950 XT / 6900 XT / 6800 XT / 6800</option>
+        <option value="2">Arc A770 16GB / Arc B580 12GB users → see 12GB group</option>
+      </optgroup>
+      <optgroup label="VRAM 12GB">
+        <option value="3">RTX 5070 / 4070 Ti / 4070 SUPER / 4070</option>
+        <option value="3">RTX 3080 12GB / 3060 12GB / 2060 12GB</option>
+        <option value="3">RX 7700 XT / 6750 XT / 6700 XT / Arc B580 / Laptop RTX 4080</option>
+      </optgroup>
+      <optgroup label="VRAM 10GB">
+        <option value="4">RTX 3080 10GB / 2080 Ti</option>
+        <option value="4">RX 6700 10GB / Laptop RTX 3080 Ti (16GB users → see 16GB group)</option>
+      </optgroup>
+      <optgroup label="VRAM 8GB">
+        <option value="5">RTX 5060 / 5060 Ti 8GB / 4060 / 4060 Ti 8GB</option>
+        <option value="5">RTX 3070 Ti / 3070 / 3060 Ti / 2080 SUPER / 2080</option>
+        <option value="5">RTX 2070 SUPER / 2070 / 2060 SUPER / 3050 8GB</option>
+        <option value="5">RX 7600 / 6650 XT / 6600 XT / 6600 / 5700 XT / 5700</option>
+        <option value="5">Arc A750 / A580 / Laptop RTX 5060 · 4070 · 4060 · 3070</option>
+      </optgroup>
+      <optgroup label="VRAM 6GB">
+        <option value="6">RTX 2060 6GB / 3050 6GB / GTX 1660 Ti / 1660 SUPER / 1660</option>
+        <option value="6">GTX 1060 6GB / RX 5600 XT / Arc A380</option>
+        <option value="6">Laptop RTX 4050 / 3060 6GB / 2060</option>
+      </optgroup>
+      <optgroup label="VRAM 4GB or less">
+        <option value="7">GTX 1650 (SUPER) / 1050 Ti / RX 6500 XT / RX 6400</option>
+        <option value="7">RX 5500 XT 4GB / Laptop GTX 1650 · 1050</option>
+      </optgroup>
+      <optgroup label="VRAM 2GB or less / integrated graphics">
+        <option value="8">GT 1030 / GT 730 / Intel UHD · Iris Xe / Vega 8 · 11</option>
+      </optgroup>
+      <optgroup label="─────────────">
+        <option value="none">❓ My card isn't listed — pick by VRAM instead</option>
+      </optgroup>
+    </select>
+    <div class="tierbadge" id="badge"></div>
+  </div>
+
+  <div class="card hidden" id="vramCard">
+    <h2>Not in the list? — Choose by VRAM amount</h2>
+    <div class="vram-guide">
+      ① Press <code>Ctrl+Shift+Esc</code> → Task Manager → <b style="color:#6ee7b7">Performance</b> tab → click <b style="color:#6ee7b7">GPU</b><br>
+      ② Check the <code>Dedicated GPU memory</code> number (e.g. 8.0 GB)<br>
+      ③ Click the matching capacity button below to generate the same settings<br>
+      <span style="color:#fca5a5">※ Cards sold in two variants (like the 5060 Ti 8GB / 16GB) must be checked this way</span>
+    </div>
+    <div class="vram-btns">
+      <button class="vram-btn" onclick="pickTier(1)">24GB or more<small>Tier 1</small></button>
+      <button class="vram-btn" onclick="pickTier(2)">16GB<small>Tier 2</small></button>
+      <button class="vram-btn" onclick="pickTier(3)">12GB<small>Tier 3</small></button>
+      <button class="vram-btn" onclick="pickTier(4)">10GB<small>Tier 4</small></button>
+      <button class="vram-btn" onclick="pickTier(5)">8GB<small>Tier 5</small></button>
+      <button class="vram-btn" onclick="pickTier(6)">6GB<small>Tier 6</small></button>
+      <button class="vram-btn" onclick="pickTier(7)">4GB<small>Tier 7</small></button>
+      <button class="vram-btn" onclick="pickTier(8)">2GB or less<small>Tier 8</small></button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="iniCard">
+    <h2>2. Copy it with the button below</h2>
+    <button class="btn" onclick="copyIni()" id="copyBtn">Copy everything</button>
+    <textarea id="iniText" readonly spellcheck="false"></textarea>
+  </div>
+
+  <div class="card hidden" id="howCard">
+    <h2>3. How to apply</h2>
+    <ol>
+      <li>Close the game completely</li>
+      <li>Press Windows key + R → type <code>%LOCALAPPDATA%\AION2\Saved\Config\Windows</code> and hit Enter</li>
+      <li>Open <code>Engine.ini</code> with Notepad</li>
+      <li>Leave the existing content untouched and paste the copied block at the <b style="color:#6ee7b7">very bottom</b></li>
+      <li>Save the file, then launch the game</li>
+    </ol>
+    <p class="note" style="margin-top:10px;">
+      <b>To revert:</b> delete the pasted block and save — it's a 100% clean revert.<br>
+      <b>Warning:</b> A game patch may reset the file, so bookmark this page.<br>
+      <b>Tip:</b> After saving, right-click the file → Properties → check "Read-only" to stop patches from resetting it.
+    </p>
+  </div>
+</div>
+
+<script>
+const COMMON_MID = `
+; -- Render pipeline locked to stable standard values
+r.OneFrameThreadLag=1
+r.FinishCurrentFrame=0
+r.RHICmdBypass=0
+r.RenderThread.Enable=1
+r.HZBOcclusion=1
+r.AllowOcclusionQueries=1
+
+; -- Memory purge interval: keeps micro-stutter in check
+gc.TimeBetweenPurgingPendingKillObjects=%GC%
+s.ForceGCAfterLevelStreamedOut=0`;
+
+const TIERS = {
+  1:{name:"Tier 1 — 24GB+ VRAM",   pool:16384, temp:4096, hlod:true,  gc:180, tip:""},
+  2:{name:"Tier 2 — 16GB VRAM",    pool:10240, temp:2048, hlod:true,  gc:120, tip:""},
+  3:{name:"Tier 3 — 12GB VRAM",    pool:7168,  temp:1536, hlod:true,  gc:120, tip:""},
+  4:{name:"Tier 4 — 10GB VRAM",    pool:6144,  temp:1280, hlod:true,  gc:120, tip:""},
+  5:{name:"Tier 5 — 8GB VRAM",     pool:4608,  temp:1024, hlod:false, gc:90,  tip:"In-game texture quality: [Medium] or lower recommended"},
+  6:{name:"Tier 6 — 6GB VRAM",     pool:3072,  temp:512,  hlod:false, gc:90,  tip:"In-game textures [Low], large-scale battle quality [Low] or lower recommended"},
+  7:{name:"Tier 7 — 4GB VRAM",     pool:2048,  temp:512,  hlod:false, gc:60,  tip:"Textures [Very Low] + resolution scale [Performance] recommended"},
+  8:{name:"Tier 8 — 2GB or less",  pool:1024,  temp:256,  hlod:false, gc:60,  tip:"Lowest in-game settings recommended; close browsers and other apps"}
+};
+
+function buildIni(t){
+  const c = TIERS[t];
+  let s = `[SystemSettings]
+; ================================================
+; AION 2 Lag Reduction INI (${c.name}) - StepTube
+; No visual-quality-affecting entries / in-game graphics options still work
+; ================================================
+
+; -- Texture streaming: use idle graphics memory as cache to remove combat stutter
+r.TextureStreaming=1
+r.Streaming.PoolSize=${c.pool}
+r.Streaming.LimitPoolSizeToVRAM=1
+r.Streaming.MaxTempMemoryAllowed=${c.temp}
+r.Streaming.FullyLoadUsedTextures=0`;
+  if(c.hlod) s += `\nr.Streaming.HLODStrategy=2`;
+  s += "\n" + COMMON_MID.replaceAll("%GC%", c.gc);
+  return s;
+}
+
+function showResult(t){
+  const c = TIERS[t];
+  const badge = document.getElementById("badge");
+  badge.style.display = "block";
+  badge.textContent = "Recommended: " + c.name + (c.tip ? "  ·  " + c.tip : "");
+  document.getElementById("iniText").value = buildIni(t);
+  document.getElementById("iniCard").classList.remove("hidden");
+  document.getElementById("howCard").classList.remove("hidden");
+}
+
+function pick(){
+  const v = document.getElementById("gpu").value;
+  if(!v) return;
+  if(v === "none"){
+    document.getElementById("vramCard").classList.remove("hidden");
+    document.getElementById("badge").style.display = "none";
+    document.getElementById("iniCard").classList.add("hidden");
+    document.getElementById("howCard").classList.add("hidden");
+    document.getElementById("vramCard").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+  document.getElementById("vramCard").classList.add("hidden");
+  showResult(v);
+}
+
+function pickTier(t){
+  showResult(t);
+  document.getElementById("iniCard").scrollIntoView({behavior:"smooth"});
+}
+
+function copyIni(){
+  const ta = document.getElementById("iniText");
+  ta.select();
+  navigator.clipboard.writeText(ta.value).then(()=>{
+    const b = document.getElementById("copyBtn");
+    b.textContent = "Copied! Paste it at the bottom of Engine.ini";
+    setTimeout(()=>{ b.textContent = "Copy everything"; }, 2500);
+  });
+}
+</script>
+</body>
+</html>
