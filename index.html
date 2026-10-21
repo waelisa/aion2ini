@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AION 2 Lag Reduction INI Generator</title>
+<title>AION 2 Lag Reduction INI Generator - StepTube</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:#0b0f14; color:#dce3ea; font-family:'Segoe UI','Malgun Gothic',sans-serif; min-height:100vh; padding:24px 16px; }
-  .wrap { max-width:760px; margin:0 auto; }
+  .wrap { max-width:860px; margin:0 auto; }
   h1 { font-size:1.5rem; color:#5eead4; margin-bottom:4px; }
   .sub { color:#8b98a5; font-size:.9rem; margin-bottom:24px; }
   .card { background:#121a23; border:1px solid #1f2b38; border-radius:12px; padding:20px; margin-bottom:16px; }
   .card h2 { font-size:1.05rem; color:#93c5fd; margin-bottom:12px; }
   select { width:100%; padding:12px; font-size:1rem; background:#0b1219; color:#dce3ea; border:1px solid #2b3b4d; border-radius:8px; cursor:pointer; }
   .tierbadge { display:none; margin-top:12px; padding:10px 14px; border-radius:8px; background:#0e2a24; border:1px solid #14532d; color:#6ee7b7; font-size:.95rem; }
-  textarea { width:100%; height:260px; margin-top:12px; background:#0b1219; color:#a7f3d0; border:1px solid #2b3b4d; border-radius:8px; padding:12px; font-family:Consolas,monospace; font-size:.8rem; resize:vertical; white-space:pre; }
+  textarea { width:100%; height:320px; margin-top:12px; background:#0b1219; color:#a7f3d0; border:1px solid #2b3b4d; border-radius:8px; padding:12px; font-family:Consolas,monospace; font-size:.8rem; resize:vertical; white-space:pre; }
   .btn { display:block; width:100%; margin-top:12px; padding:14px; font-size:1.05rem; font-weight:700; color:#06251f; background:linear-gradient(90deg,#5eead4,#a7f3d0); border:none; border-radius:8px; cursor:pointer; }
   .btn:active { transform:scale(.99); }
   ol { padding-left:20px; line-height:1.9; font-size:.95rem; }
@@ -22,23 +22,26 @@
   .note { font-size:.85rem; color:#8b98a5; line-height:1.7; }
   .note b { color:#fca5a5; }
   .hidden { display:none; }
-  /* Direct VRAM selection panel */
   .vram-guide { font-size:.9rem; color:#8b98a5; line-height:1.8; margin-bottom:12px; }
   .vram-guide code { background:#0b1219; padding:2px 6px; border-radius:4px; color:#fbbf24; font-size:.85rem; }
   .vram-btns { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
   .vram-btn { padding:12px 8px; font-size:.95rem; font-weight:700; color:#dce3ea; background:#0b1219; border:1px solid #2b3b4d; border-radius:8px; cursor:pointer; }
   .vram-btn:hover { border-color:#5eead4; color:#5eead4; }
   .vram-btn small { display:block; font-weight:400; font-size:.75rem; color:#8b98a5; margin-top:2px; }
+  .quality-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .quality-btn { flex:1 1 120px; padding:10px; font-weight:700; background:#0b1219; border:1px solid #2b3b4d; border-radius:8px; color:#dce3ea; cursor:pointer; }
+  .quality-btn.active { border-color:#5eead4; background:#0e2a24; color:#6ee7b7; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>AION 2 Lag Reduction INI Generator</h1>
-  <div class="sub">No visual quality change · In-game options stay unlocked ·</div>
+  <div class="sub">No visual quality change · In-game options stay unlocked · Delete it to fully revert — by StepTube</div>
 
+  <!-- GPU SELECTION -->
   <div class="card">
     <h2>1. Select your graphics card</h2>
-    <select id="gpu" onchange="pick()">
+    <select id="gpu" onchange="onGpuChange()">
       <option value="">— Choose my graphics card —</option>
       <optgroup label="VRAM 24GB and above">
         <option value="1">RTX 5090 / 4090 / 3090 Ti / 3090</option>
@@ -48,7 +51,7 @@
         <option value="2">RTX 5080 / 5070 Ti / 4080 (SUPER) / 4070 Ti SUPER</option>
         <option value="2">RTX 5060 Ti 16GB / 4060 Ti 16GB / Laptop RTX 5090 · 5080 · 4090</option>
         <option value="2">RX 7900 XT (20GB) / 7800 XT / 6950 XT / 6900 XT / 6800 XT / 6800</option>
-        <option value="2">Arc A770 16GB / Arc B580 12GB users → see 12GB group</option>
+        <option value="2">Arc A770 16GB / Arc B580 12GB → see 12GB group</option>
       </optgroup>
       <optgroup label="VRAM 12GB">
         <option value="3">RTX 5070 / 4070 Ti / 4070 SUPER / 4070</option>
@@ -57,7 +60,7 @@
       </optgroup>
       <optgroup label="VRAM 10GB">
         <option value="4">RTX 3080 10GB / 2080 Ti</option>
-        <option value="4">RX 6700 10GB / Laptop RTX 3080 Ti (16GB users → see 16GB group)</option>
+        <option value="4">RX 6700 10GB / Laptop RTX 3080 Ti (16GB → see 16GB group)</option>
       </optgroup>
       <optgroup label="VRAM 8GB">
         <option value="5">RTX 5060 / 5060 Ti 8GB / 4060 / 4060 Ti 8GB</option>
@@ -85,6 +88,7 @@
     <div class="tierbadge" id="badge"></div>
   </div>
 
+  <!-- VRAM FALLBACK -->
   <div class="card hidden" id="vramCard">
     <h2>Not in the list? — Choose by VRAM amount</h2>
     <div class="vram-guide">
@@ -105,14 +109,30 @@
     </div>
   </div>
 
+  <!-- QUALITY PRESET -->
+  <div class="card" id="qualityCard">
+    <h2>2. Choose your quality preset</h2>
+    <div class="vram-guide" style="margin-bottom:8px;">
+      These presets adjust view distance, shadows, effects, and post-processing. Texture pool size is still set automatically by your GPU tier above.
+    </div>
+    <div class="quality-row">
+      <button class="quality-btn" data-q="low" onclick="setQuality('low')">Low</button>
+      <button class="quality-btn active" data-q="medium" onclick="setQuality('medium')">Medium</button>
+      <button class="quality-btn" data-q="high" onclick="setQuality('high')">High</button>
+      <button class="quality-btn" data-q="ultra" onclick="setQuality('ultra')">Ultra</button>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
   <div class="card hidden" id="iniCard">
-    <h2>2. Copy it with the button below</h2>
+    <h2>3. Copy it with the button below</h2>
     <button class="btn" onclick="copyIni()" id="copyBtn">Copy everything</button>
     <textarea id="iniText" readonly spellcheck="false"></textarea>
   </div>
 
+  <!-- HOW TO APPLY -->
   <div class="card hidden" id="howCard">
-    <h2>3. How to apply</h2>
+    <h2>4. How to apply</h2>
     <ol>
       <li>Close the game completely</li>
       <li>Press Windows key + R → type <code>%LOCALAPPDATA%\AION2\Saved\Config\Windows</code> and hit Enter</li>
@@ -129,7 +149,139 @@
 </div>
 
 <script>
-const COMMON_MID = `
+/* =========================================================
+   QUALITY PRESETS
+   Values derived from the Aion2Timers advanced guide.
+   ========================================================= */
+const QUALITY_PRESETS = {
+  low: {
+    label: "Low",
+    viewDistance: 1.0,
+    staticMeshLOD: 0.6,
+    skeletalMeshLODBias: 0,
+    foliageLOD: 0.75,
+    shadowQuality: 1,
+    shadowCSM: 1,
+    shadowDistance: 0.6,
+    shadowRadiusThreshold: 0.12,
+    ssrQuality: 0,
+    particleLightQuality: 0,
+    emitterSpawnRate: 0.5,
+    motionBlur: 0,
+    depthOfField: 0,
+    lensFlare: 0,
+    sceneColorFringe: 0,
+    bloom: 0,
+    lightShaft: 0,
+    ambientOcclusion: 0,
+    volumetricFog: 0,
+    tonemapperSharpen: 0.0,
+    note: "Maximum FPS. Shadows and effects heavily reduced."
+  },
+  medium: {
+    label: "Medium",
+    viewDistance: 1.25,
+    staticMeshLOD: 0.75,
+    skeletalMeshLODBias: 0,
+    foliageLOD: 1.0,
+    shadowQuality: 3,
+    shadowCSM: 3,
+    shadowDistance: 1.0,
+    shadowRadiusThreshold: 0.08,
+    ssrQuality: 2,
+    particleLightQuality: 0,
+    emitterSpawnRate: 0.75,
+    motionBlur: 0,
+    depthOfField: 0,
+    lensFlare: 1,
+    sceneColorFringe: 0,
+    bloom: 2,
+    lightShaft: 1,
+    ambientOcclusion: 2,
+    volumetricFog: 1,
+    tonemapperSharpen: 0.3,
+    note: "Balanced. Good visuals with stable frame times."
+  },
+  high: {
+    label: "High",
+    viewDistance: 1.55,
+    staticMeshLOD: 0.75,
+    skeletalMeshLODBias: -1,
+    foliageLOD: 1.5,
+    shadowQuality: 3,
+    shadowCSM: 3,
+    shadowDistance: 1.05,
+    shadowRadiusThreshold: 0.06,
+    ssrQuality: 2,
+    particleLightQuality: 0,
+    emitterSpawnRate: 1.0,
+    motionBlur: 0,
+    depthOfField: 0,
+    lensFlare: 2,
+    sceneColorFringe: 1,
+    bloom: 3,
+    lightShaft: 2,
+    ambientOcclusion: 3,
+    volumetricFog: 2,
+    tonemapperSharpen: 0.55,
+    note: "Sharper distant objects and characters. Higher GPU load."
+  },
+  ultra: {
+    label: "Ultra",
+    viewDistance: 2.0,
+    staticMeshLOD: 0.75,
+    skeletalMeshLODBias: -1,
+    foliageLOD: 1.5,
+    shadowQuality: 4,
+    shadowCSM: 4,
+    shadowDistance: 1.2,
+    shadowRadiusThreshold: 0.05,
+    ssrQuality: 3,
+    particleLightQuality: 1,
+    emitterSpawnRate: 1.0,
+    motionBlur: 1,
+    depthOfField: 1,
+    lensFlare: 2,
+    sceneColorFringe: 2,
+    bloom: 4,
+    lightShaft: 3,
+    ambientOcclusion: 4,
+    volumetricFog: 3,
+    tonemapperSharpen: 0.55,
+    note: "Maximum visuals. Only for top-tier GPUs."
+  }
+};
+
+/* =========================================================
+   VRAM TIERS (pool sizes & GC behaviour)
+   ========================================================= */
+const VRAM_TIERS = {
+  1: { name: "24GB+ VRAM",  pool: 12288, temp: 2048, hlod: true,  gc: 180 },
+  2: { name: "16GB VRAM",   pool: 10240, temp: 2048, hlod: true,  gc: 150 },
+  3: { name: "12GB VRAM",   pool: 8192,  temp: 1024, hlod: true,  gc: 120 },
+  4: { name: "10GB VRAM",   pool: 7168,  temp: 1024, hlod: true,  gc: 120 },
+  5: { name: "8GB VRAM",    pool: 6144,  temp: 512,  hlod: false, gc: 90  },
+  6: { name: "6GB VRAM",    pool: 4096,  temp: 512,  hlod: false, gc: 90  },
+  7: { name: "4GB VRAM",    pool: 3072,  temp: 256,  hlod: false, gc: 60  },
+  8: { name: "2GB or less", pool: 2048,  temp: 256,  hlod: false, gc: 60  }
+};
+
+/* =========================================================
+   COMMON STREAMING / RENDER SETTINGS
+   ========================================================= */
+const STREAMING_BASE = `
+; -- Texture streaming: use idle VRAM as cache to eliminate stutter
+r.TextureStreaming=1
+r.Streaming.PoolSize=%POOL%
+r.Streaming.LimitPoolSizeToVRAM=1
+r.Streaming.MaxTempMemoryAllowed=%TEMP%
+r.Streaming.Boost=1.25
+r.Streaming.FullyLoadUsedTextures=0`;
+
+const STREAMING_HLOD = `
+r.Streaming.HLODStrategy=2`;
+
+const COMMON_RENDER = `
 ; -- Render pipeline locked to stable standard values
 r.OneFrameThreadLag=1
 r.FinishCurrentFrame=0
@@ -137,78 +289,158 @@ r.RHICmdBypass=0
 r.RenderThread.Enable=1
 r.HZBOcclusion=1
 r.AllowOcclusionQueries=1
+r.ViewDistanceScale=%VIEW%
+r.StaticMeshLODDistanceScale=%SML%
+r.SkeletalMeshLODBias=%SKM%
+foliage.LODDistanceScale=%FOL%`;
 
-; -- Memory purge interval: keeps micro-stutter in check
+const QUALITY_BLOCK = `
+; -- Quality preset: %QUALITY_NAME%
+r.ShadowQuality=%SHADOW%
+r.Shadow.CSM.MaxCascades=%SHADOW_CSM%
+r.Shadow.DistanceScale=%SHADOW_DIST%
+r.Shadow.RadiusThreshold=%SHADOW_RAD%
+r.SSR.Quality=%SSR%
+r.ParticleLightQuality=%PART_LIGHT%
+r.EmitterSpawnRateScale=%EMITTER%
+r.MotionBlurQuality=%MOTION_BLUR%
+r.DepthOfFieldQuality=%DOF%
+r.LensFlareQuality=%LENS_FLARE%
+r.SceneColorFringeQuality=%SCENE_FRINGE%
+r.BloomQuality=%BLOOM%
+r.LightShaftQuality=%LIGHT_SHAFT%
+r.AmbientOcclusionLevels=%AO%
+r.VolumetricFog=%VOL_FOG%
+r.Tonemapper.Sharpen=%SHARPEN%`;
+
+const GC_BLOCK = `
+; -- Memory cleanup interval: longer = fewer combat hitches
 gc.TimeBetweenPurgingPendingKillObjects=%GC%
 s.ForceGCAfterLevelStreamedOut=0`;
 
-const TIERS = {
-  1:{name:"Tier 1 — 24GB+ VRAM",   pool:16384, temp:4096, hlod:true,  gc:180, tip:""},
-  2:{name:"Tier 2 — 16GB VRAM",    pool:10240, temp:2048, hlod:true,  gc:120, tip:""},
-  3:{name:"Tier 3 — 12GB VRAM",    pool:7168,  temp:1536, hlod:true,  gc:120, tip:""},
-  4:{name:"Tier 4 — 10GB VRAM",    pool:6144,  temp:1280, hlod:true,  gc:120, tip:""},
-  5:{name:"Tier 5 — 8GB VRAM",     pool:4608,  temp:1024, hlod:false, gc:90,  tip:"In-game texture quality: [Medium] or lower recommended"},
-  6:{name:"Tier 6 — 6GB VRAM",     pool:3072,  temp:512,  hlod:false, gc:90,  tip:"In-game textures [Low], large-scale battle quality [Low] or lower recommended"},
-  7:{name:"Tier 7 — 4GB VRAM",     pool:2048,  temp:512,  hlod:false, gc:60,  tip:"Textures [Very Low] + resolution scale [Performance] recommended"},
-  8:{name:"Tier 8 — 2GB or less",  pool:1024,  temp:256,  hlod:false, gc:60,  tip:"Lowest in-game settings recommended; close browsers and other apps"}
-};
+/* =========================================================
+   STATE
+   ========================================================= */
+let currentTier = null;
+let currentQuality = "medium";
 
-function buildIni(t){
-  const c = TIERS[t];
-  let s = `[SystemSettings]
-; ================================================
-; AION 2 Lag Reduction INI (${c.name}) - StepTube
-; No visual-quality-affecting entries / in-game graphics options still work
-; ================================================
-
-; -- Texture streaming: use idle graphics memory as cache to remove combat stutter
-r.TextureStreaming=1
-r.Streaming.PoolSize=${c.pool}
-r.Streaming.LimitPoolSizeToVRAM=1
-r.Streaming.MaxTempMemoryAllowed=${c.temp}
-r.Streaming.FullyLoadUsedTextures=0`;
-  if(c.hlod) s += `\nr.Streaming.HLODStrategy=2`;
-  s += "\n" + COMMON_MID.replaceAll("%GC%", c.gc);
-  return s;
-}
-
-function showResult(t){
-  const c = TIERS[t];
-  const badge = document.getElementById("badge");
-  badge.style.display = "block";
-  badge.textContent = "Recommended: " + c.name + (c.tip ? "  ·  " + c.tip : "");
-  document.getElementById("iniText").value = buildIni(t);
-  document.getElementById("iniCard").classList.remove("hidden");
-  document.getElementById("howCard").classList.remove("hidden");
-}
-
-function pick(){
+/* =========================================================
+   EVENT HANDLERS
+   ========================================================= */
+function onGpuChange() {
   const v = document.getElementById("gpu").value;
-  if(!v) return;
-  if(v === "none"){
+  if (!v) return;
+  if (v === "none") {
     document.getElementById("vramCard").classList.remove("hidden");
     document.getElementById("badge").style.display = "none";
     document.getElementById("iniCard").classList.add("hidden");
     document.getElementById("howCard").classList.add("hidden");
-    document.getElementById("vramCard").scrollIntoView({behavior:"smooth"});
+    document.getElementById("vramCard").scrollIntoView({ behavior: "smooth" });
+    currentTier = null;
     return;
   }
   document.getElementById("vramCard").classList.add("hidden");
-  showResult(v);
+  currentTier = parseInt(v, 10);
+  render();
 }
 
-function pickTier(t){
-  showResult(t);
-  document.getElementById("iniCard").scrollIntoView({behavior:"smooth"});
+function pickTier(t) {
+  currentTier = t;
+  document.getElementById("vramCard").classList.add("hidden");
+  render();
+  document.getElementById("iniCard").scrollIntoView({ behavior: "smooth" });
 }
 
-function copyIni(){
+function setQuality(q) {
+  currentQuality = q;
+  document.querySelectorAll(".quality-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.q === q);
+  });
+  if (currentTier) render();
+}
+
+/* =========================================================
+   BUILD INI
+   ========================================================= */
+function buildIni(tier, qualityKey) {
+  const v = VRAM_TIERS[tier];
+  const q = QUALITY_PRESETS[qualityKey];
+
+  let pool = v.pool;
+  let temp = v.temp;
+  let gc = v.gc;
+  let hlod = v.hlod;
+
+  let streaming = STREAMING_BASE
+    .replaceAll("%POOL%", pool)
+    .replaceAll("%TEMP%", temp);
+  if (hlod) streaming += STREAMING_HLOD;
+
+  let render = COMMON_RENDER
+    .replaceAll("%VIEW%", q.viewDistance)
+    .replaceAll("%SML%", q.staticMeshLOD)
+    .replaceAll("%SKM%", q.skeletalMeshLODBias)
+    .replaceAll("%FOL%", q.foliageLOD);
+
+  let qualityBlock = QUALITY_BLOCK
+    .replaceAll("%QUALITY_NAME%", q.label)
+    .replaceAll("%SHADOW%", q.shadowQuality)
+    .replaceAll("%SHADOW_CSM%", q.shadowCSM)
+    .replaceAll("%SHADOW_DIST%", q.shadowDistance)
+    .replaceAll("%SHADOW_RAD%", q.shadowRadiusThreshold)
+    .replaceAll("%SSR%", q.ssrQuality)
+    .replaceAll("%PART_LIGHT%", q.particleLightQuality)
+    .replaceAll("%EMITTER%", q.emitterSpawnRate)
+    .replaceAll("%MOTION_BLUR%", q.motionBlur)
+    .replaceAll("%DOF%", q.depthOfField)
+    .replaceAll("%LENS_FLARE%", q.lensFlare)
+    .replaceAll("%SCENE_FRINGE%", q.sceneColorFringe)
+    .replaceAll("%BLOOM%", q.bloom)
+    .replaceAll("%LIGHT_SHAFT%", q.lightShaft)
+    .replaceAll("%AO%", q.ambientOcclusion)
+    .replaceAll("%VOL_FOG%", q.volumetricFog)
+    .replaceAll("%SHARPEN%", q.tonemapperSharpen);
+
+  let gcBlock = GC_BLOCK.replaceAll("%GC%", gc);
+
+  let header = `[SystemSettings]
+; ================================================
+; AION 2 Lag Reduction INI
+; GPU tier: ${v.name}  |  Quality: ${q.label}
+; Generated by StepTube - no visual quality change to in-game options
+; ================================================
+`;
+
+  return header + streaming + render + qualityBlock + gcBlock;
+}
+
+/* =========================================================
+   RENDER OUTPUT
+   ========================================================= */
+function render() {
+  if (!currentTier) return;
+  const v = VRAM_TIERS[currentTier];
+  const q = QUALITY_PRESETS[currentQuality];
+
+  const badge = document.getElementById("badge");
+  badge.style.display = "block";
+  badge.textContent = `GPU: ${v.name}  ·  Quality: ${q.label}  ·  ${q.note}`;
+
+  document.getElementById("iniText").value = buildIni(currentTier, currentQuality);
+  document.getElementById("iniCard").classList.remove("hidden");
+  document.getElementById("howCard").classList.remove("hidden");
+}
+
+/* =========================================================
+   COPY
+   ========================================================= */
+function copyIni() {
   const ta = document.getElementById("iniText");
   ta.select();
-  navigator.clipboard.writeText(ta.value).then(()=>{
+  navigator.clipboard.writeText(ta.value).then(() => {
     const b = document.getElementById("copyBtn");
     b.textContent = "Copied! Paste it at the bottom of Engine.ini";
-    setTimeout(()=>{ b.textContent = "Copy everything"; }, 2500);
+    setTimeout(() => { b.textContent = "Copy everything"; }, 2500);
   });
 }
 </script>
